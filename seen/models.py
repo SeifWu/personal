@@ -31,6 +31,7 @@ class WatchedObject(models.Model):
     # TODO 尝试使用 FilePathField
     cover = models.CharField(max_length=255)
     categories = models.ManyToManyField(Category)
+    owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
     seen_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
