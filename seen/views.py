@@ -1,11 +1,12 @@
 from django.contrib.auth.models import User, Group
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from seen.models import Category
 from seen.serializers import UserSerializer, GroupSerializer, CategorySerializer
@@ -29,14 +30,18 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-# @csrf_exempt
-@api_view(['GET', 'POST'])
-def category_list(request, format=None):
-    if request.method == 'GET':
+class CategoryList(APIView):
+    """
+    List all category, or create a new category
+    """
+
+    # format=None
+    def get(self, request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
+
+    def post(self, request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -44,24 +49,28 @@ def category_list(request, format=None):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @csrf_exempt
-@api_view(['GET', 'PUT', 'DELETE'])
-def category_detail(request, pk, format=None):
-    try:
-        category = Category.objects.get(pk=pk)
-    except Category.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+class CategoryDetail(APIView):
+    @staticmethod
+    def get_object(pk):
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Http404
 
-    if request.method == 'GET':
+    def get(self, request, pk):
+        category = self.get_object(pk)
         serializer = CategorySerializer(category)
         return Response(serializer.data)
-    elif request.method == 'PUT':
+
+    def put(self, request, pk):
+        category = self.get_object(pk)
         serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+    def delete(self, request, pk):
+        category = self.get_object(pk)
         category.delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
