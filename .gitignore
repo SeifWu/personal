@@ -12,3 +12,4 @@ venv.bak/
 pythonenv*
 
 */__pycache__
+*/*/__pycache__
