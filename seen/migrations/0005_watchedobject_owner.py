@@ -7,7 +7,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('seen', '0004_tag'),
@@ -17,7 +16,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='watchedobject',
             name='owner',
-            field=models.ForeignKey(default=django.utils.timezone.now, on_delete=django.db.models.deletion.CASCADE, related_name='snippets', to='auth.user'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='snippets',
+                                    to='auth.user'),
             preserve_default=False,
         ),
     ]
