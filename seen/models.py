@@ -29,7 +29,7 @@ class WatchedObject(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
     # TODO 尝试使用 FilePathField
-    cover = models.CharField(max_length=255)
+    cover = models.CharField(max_length=255, blank=True, default='')
     categories = models.ManyToManyField(Category)
     owner = models.ForeignKey('auth.User', related_name='watched_objects', on_delete=models.CASCADE)
     seen_at = models.DateTimeField()
