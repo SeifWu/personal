@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from seen.models import Category
+from seen.models import Category, Tag
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    # parent = serializers.PrimaryKeyRelatedField(read_only=True, queryset=)
+
     class Meta:
         model = Category
         fields = ['id', 'title', 'created_at', 'updated_at', 'parent_id']
@@ -22,6 +24,12 @@ class CategorySerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.save()
         return instance
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'title', 'created_at', 'updated_at']
 
 
 # TODO 学习DRF 暂时写在这，后续移到其他地方

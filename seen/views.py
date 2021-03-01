@@ -1,13 +1,12 @@
 from django.contrib.auth.models import User, Group
-from django.http import JsonResponse, HttpResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, Http404
 from rest_framework import viewsets, status
 from rest_framework import permissions
-from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
 
+from app.common.utils.pagination import CustomPagination
 from seen.models import Category
 from seen.serializers import UserSerializer, GroupSerializer, CategorySerializer
 
@@ -16,6 +15,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -30,16 +30,21 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CategoryList(APIView):
-    """
-    List all category, or create a new category
-    """
+class CategoryList(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-    # format=None
     def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+        queryset = self.get_queryset()
+
+        # 分页
+        page_obj = CustomPagination(request=request)
+        # print(page_obj.get_page_size(request=request))
+        page_list = page_obj.paginate_queryset(queryset=queryset, request=request, view=self)
+
+        serializer = CategorySerializer(page_list, many=True)
+
+        return page_obj.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
