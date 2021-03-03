@@ -6,7 +6,7 @@ class CustomPagination(PageNumberPagination):
     def __init__(self, request):
         self.page_size_query_param = 'pageSize'
         self.page_query_param = 'current'
-        self.page_size = self.get_page_size(request=request)
+        self.page_size = self.get_page_size(request=request) or 10
         self.max_page_size = 100
 
     def get_paginated_response(self, data):

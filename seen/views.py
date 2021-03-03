@@ -2,13 +2,14 @@ from django.contrib.auth.models import User, Group
 from django.http import HttpResponse, Http404
 from rest_framework import viewsets, status
 from rest_framework import permissions
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
 
 from app.common.utils.pagination import CustomPagination
-from seen.models import Category
-from seen.serializers import UserSerializer, GroupSerializer, CategorySerializer
+from seen.models import Category, Tag
+from seen.serializers import UserSerializer, GroupSerializer, CategorySerializer, TagSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -36,10 +37,8 @@ class CategoryList(generics.ListCreateAPIView):
 
     def get(self, request):
         queryset = self.get_queryset()
-
         # 分页
         page_obj = CustomPagination(request=request)
-        # print(page_obj.get_page_size(request=request))
         page_list = page_obj.paginate_queryset(queryset=queryset, request=request, view=self)
 
         serializer = CategorySerializer(page_list, many=True)
@@ -52,6 +51,17 @@ class CategoryList(generics.ListCreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # @action(detail=False, methods=['get'])
+    # def test(self, request):
+    #     queryset = self.get_queryset().filter(headline__startswith='test')
+    #     # 分页
+    #     page_obj = CustomPagination(request=request)
+    #     page_list = page_obj.paginate_queryset(queryset=queryset, request=request, view=self)
+    #
+    #     serializer = CategorySerializer(page_list, many=True)
+    #
+    #     return page_obj.get_paginated_response(serializer.data)
 
 
 class CategoryDetail(APIView):
@@ -79,3 +89,28 @@ class CategoryDetail(APIView):
         category = self.get_object(pk)
         category.delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+class TagViewSet(viewsets.ViewSet):
+    # serializer_class = TagSerializer
+
+    def list(self, request):
+        queryset = Tag.objects.all()
+        # 分页
+        page_obj = CustomPagination(request=request)
+        page_list = page_obj.paginate_queryset(queryset=queryset, request=request, view=self)
+
+        serializer = TagSerializer(page_list, many=True)
+
+        return page_obj.get_paginated_response(serializer.data)
+
+    @staticmethod
+    def create(request):
+        serializer = TagSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return serializer.data
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+

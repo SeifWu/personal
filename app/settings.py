@@ -55,7 +55,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'app.common.utils.pagination.CustomPagination',
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        # 'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ]
 }
 

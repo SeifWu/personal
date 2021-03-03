@@ -18,14 +18,17 @@ from django.urls import path, include
 
 from rest_framework import routers
 from seen import views
+from seen.urls import routers as seen_routers
 
 router = routers.DefaultRouter()
 router.register('users', views.UserViewSet)
 router.register('groups', views.GroupViewSet)
+# seen_routers
+# seen_tags
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)),
-    path('api/v1/seen/', include('seen.urls')),
+    # path('api/v1/', include(router.urls)),
+    path('api/v1/manager/seen/', include('seen.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
