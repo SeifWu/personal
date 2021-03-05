@@ -31,6 +31,14 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ['id', 'title', 'created_at', 'updated_at']
 
+    # def create(self, validated_data):
+    #     return Tag.objects.create(**validated_data)
+
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get('title', instance.title)
+    #     instance.save()
+    #     return instance
+
 
 # TODO 学习DRF 暂时写在这，后续移到其他地方
 class UserSerializer(serializers.HyperlinkedModelSerializer):

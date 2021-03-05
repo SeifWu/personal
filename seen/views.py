@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from app.common.utils.pagination import CustomPagination
 from seen.models import Category, Tag
@@ -92,7 +93,8 @@ class CategoryDetail(APIView):
 
 
 class TagViewSet(viewsets.ViewSet):
-    # serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def list(self, request):
         queryset = Tag.objects.all()
@@ -109,8 +111,7 @@ class TagViewSet(viewsets.ViewSet):
         serializer = TagSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return serializer.data
+            return Response(serializer.data)
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
-

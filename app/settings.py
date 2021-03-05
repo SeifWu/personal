@@ -34,6 +34,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
+    'localhost',
     'seifwu.com'
 ]
 
@@ -42,6 +43,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'seen.apps.SeenConfig',
+    'common.apps.CommonConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +58,10 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 MIDDLEWARE = [
